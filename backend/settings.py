@@ -16,10 +16,16 @@ INSTALLED_APPS = [
     'django_rest_passwordreset',
     # Apps del Proyecto
     'core',
-
 ]
 
-# Configuración de la base de datos MySQL en Docker
+# Configuración para enviar correos electrónicos
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'  # Usando Gmail como ejemplo
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'soportealex68@gmail.com'  # Tu correo de envío
+EMAIL_HOST_PASSWORD = 'Admin1997!'  # La contraseña de tu correo
+
 # Configuración de la base de datos MySQL en Docker
 DATABASES = {
     'default': {
@@ -27,7 +33,7 @@ DATABASES = {
         'NAME': 'envio_dinero',
         'USER': 'root',
         'PASSWORD': '12deoctubre',
-        'HOST': 'localhost',
+        'HOST': 'localhost',  # Si estás usando Docker, asegúrate de que el contenedor de MySQL esté corriendo
         'PORT': '3306',
         'OPTIONS': {
             'init_command': "SET sql_mode='STRICT_TRANS_TABLES'"
@@ -61,17 +67,16 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'django.middleware.security.SecurityMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
-    
 ]
 
+# Configuración de CORS para permitir acceso desde el frontend
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",  # Tu frontend en Vite
+    "http://localhost:3000",  # Otro puerto para frontend si lo necesitas
 ]
 
 CORS_ALLOW_CREDENTIALS = True  # Para permitir cookies y autenticación en las peticiones
-
+CORS_ALLOW_ALL_ORIGINS = True  # Permitir cualquier origen (aunque puedes ajustarlo a tus necesidades)
 
 # Configuración de Templates
 TEMPLATES = [
@@ -90,23 +95,17 @@ TEMPLATES = [
     },
 ]
 
-AUTH_USER_MODEL = 'usuarios.Usuario'
+# Configuración para el modelo de usuario personalizado
+AUTH_USER_MODEL = 'users.User'
 
-
+# Clave secreta para Django (asegúrate de cambiarla en producción)
 SECRET_KEY = 'jwt%qp2uo=872d#fx8ykal@*(@ixwsik50@w(ezp776stra62&'
 
 # Configuración de CORS para permitir el acceso al frontend
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",  # Cambia esto según la URL de tu frontend
-]
-
-
 ALLOWED_HOSTS = ['localhost', '127.0.0.1', '[::1]']  # Agrega los hosts que necesites
 
-DEBUG = True
-
+DEBUG = True  # Cambia esto a False en producción
 
 STATIC_URL = '/static/'
-
 
 ROOT_URLCONF = 'backend.urls'
