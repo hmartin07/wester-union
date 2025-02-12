@@ -47,3 +47,4 @@ class TarifaSerializer(serializers.ModelSerializer):
         if Tarifa.objects.filter(pais=value).exists():
             raise serializers.ValidationError("Ya existe una tarifa para este país.")
         return value
+    #commit

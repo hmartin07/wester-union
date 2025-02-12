@@ -79,3 +79,5 @@ class Tarifa(models.Model):
 
     def __str__(self):
         return f"{self.pais}: {self.comision}$ - {self.impuesto}%"
+    
+    #commit

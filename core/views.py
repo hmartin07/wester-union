@@ -79,4 +79,4 @@ class TransaccionViewSet(viewsets.ModelViewSet):
 class TarifaViewSet(viewsets.ModelViewSet):
     queryset = Tarifa.objects.all()
     serializer_class = TarifaSerializer
-    pagination_class = None  # Desactiva la paginación para obtener todas las tarifas
+    pagination_class = None 
