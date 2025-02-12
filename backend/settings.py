@@ -24,7 +24,7 @@ EMAIL_HOST = 'smtp.gmail.com'  # Usando Gmail como ejemplo
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'soportealex68@gmail.com'  # Tu correo de envío
-EMAIL_HOST_PASSWORD = 'Admin1997!'  # La contraseña de tu correo
+EMAIL_HOST_PASSWORD = 'bpqy goan yadw qjtd'  # La contraseña de tu correo
 
 # Configuración de la base de datos MySQL en Docker
 DATABASES = {
@@ -49,10 +49,10 @@ REST_FRAMEWORK = {
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
     'DEFAULT_PERMISSION_CLASSES': (
-        'rest_framework.permissions.IsAuthenticated',
-        'rest_framework.permissions.AllowAny',
+        'rest_framework.permissions.IsAuthenticated',  # Default permission, can be overridden
     ),
 }
+
 
 SIMPLE_JWT = {
     'AUTH_HEADER_TYPES': ('Bearer',),
@@ -60,6 +60,8 @@ SIMPLE_JWT = {
 
 # Configuración de Middleware
 MIDDLEWARE = [
+    "corsheaders.middleware.CorsMiddleware",  # Agregar en la parte superior
+    "django.middleware.common.CommonMiddleware",
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
