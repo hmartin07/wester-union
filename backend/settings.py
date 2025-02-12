@@ -24,15 +24,15 @@ EMAIL_HOST = 'smtp.gmail.com'  # Usando Gmail como ejemplo
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'soportealex68@gmail.com'  # Tu correo de envío
-EMAIL_HOST_PASSWORD = 'Admin1997!'  # La contraseña de tu correo
-
+EMAIL_HOST_PASSWORD = 'bpqy goan yadw qjtd'  # La contraseña de tu correo
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 # Configuración de la base de datos MySQL en Docker
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'envio_dinero',
         'USER': 'root',
-        'PASSWORD': '12deoctubre',
+        'PASSWORD': 'Clases.2025',
         'HOST': 'localhost',  # Si estás usando Docker, asegúrate de que el contenedor de MySQL esté corriendo
         'PORT': '3306',
         'OPTIONS': {
@@ -67,8 +67,9 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
 ]
-
+CORS_ALLOW_ALL_ORIGINS = True 
 # Configuración de CORS para permitir acceso desde el frontend
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",  # Tu frontend en Vite
