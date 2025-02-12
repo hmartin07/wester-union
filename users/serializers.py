@@ -1,13 +1,16 @@
 from rest_framework import serializers
-from .models import User
-from django.contrib.auth import authenticate
+from django.contrib.auth import get_user_model
+
+User = get_user_model()
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['id', 'email', 'password', 'is_verified']
+        fields = ['id', 'username', 'email', 'password', 'is_verified']
         extra_kwargs = {
-            'password': {'write_only': True}  # No mostrar la contraseña
+            'password': {'write_only': True},
+            'username': {'required': True},
+            'email': {'required': True},
         }
 
     def create(self, validated_data):
@@ -21,9 +24,17 @@ class LoginSerializer(serializers.Serializer):
     def validate(self, data):
         email = data.get('email')
         password = data.get('password')
-        user = authenticate(email=email, password=password)
-        if user is None:
-            raise serializers.ValidationError("Credenciales incorrectas")
+
+        try:
+            user = User.objects.get(email=email)
+        except User.DoesNotExist:
+            raise serializers.ValidationError("Correo o contraseña incorrectos.")
+
+        # Comprobar la contraseña manualmente
+        if not user.check_password(password):
+            raise serializers.ValidationError("Correo o contraseña incorrectos.")
+
         if not user.is_verified:
-            raise serializers.ValidationError("La cuenta no está verificada")
+            raise serializers.ValidationError("La cuenta no está verificada.")
+
         return data

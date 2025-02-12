@@ -16,6 +16,9 @@ INSTALLED_APPS = [
     'django_rest_passwordreset',
     # Apps del Proyecto
     'core',
+    'api',
+    'djoser',
+    'transfers',
 ]
 
 # Configuración para enviar correos electrónicos
@@ -25,7 +28,11 @@ EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'soportealex68@gmail.com'  # Tu correo de envío
 EMAIL_HOST_PASSWORD = 'bpqy goan yadw qjtd'  # La contraseña de tu correo
+<<<<<<< HEAD
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+=======
+
+>>>>>>> b9e91aa2d357f726b29511b80dcf7a020cbeea27
 # Configuración de la base de datos MySQL en Docker
 DATABASES = {
     'default': {
@@ -49,17 +56,27 @@ REST_FRAMEWORK = {
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
     'DEFAULT_PERMISSION_CLASSES': (
-        'rest_framework.permissions.IsAuthenticated',
-        'rest_framework.permissions.AllowAny',
+        'rest_framework.permissions.IsAuthenticated',  # Default permission, can be overridden
     ),
 }
+
 
 SIMPLE_JWT = {
     'AUTH_HEADER_TYPES': ('Bearer',),
 }
 
+DJOSER = {
+    'PASSWORD_RESET_CONFIRM_URL': 'reset-password/{uid}/{token}',
+    'SEND_ACTIVATION_EMAIL': False,
+    'SEND_CONFIRMATION_EMAIL': False,
+}
+
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
 # Configuración de Middleware
 MIDDLEWARE = [
+    "corsheaders.middleware.CorsMiddleware",  # Agregar en la parte superior
+    "django.middleware.common.CommonMiddleware",
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
