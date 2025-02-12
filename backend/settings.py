@@ -16,6 +16,9 @@ INSTALLED_APPS = [
     'django_rest_passwordreset',
     # Apps del Proyecto
     'core',
+    'api',
+    'djoser',
+    'transfers',
 ]
 
 # Configuración para enviar correos electrónicos
@@ -57,6 +60,14 @@ REST_FRAMEWORK = {
 SIMPLE_JWT = {
     'AUTH_HEADER_TYPES': ('Bearer',),
 }
+
+DJOSER = {
+    'PASSWORD_RESET_CONFIRM_URL': 'reset-password/{uid}/{token}',
+    'SEND_ACTIVATION_EMAIL': False,
+    'SEND_CONFIRMATION_EMAIL': False,
+}
+
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 # Configuración de Middleware
 MIDDLEWARE = [

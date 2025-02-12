@@ -3,7 +3,6 @@ from django.core.mail import send_mail
 from rest_framework import status, views, permissions
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
-from django.contrib.auth import authenticate
 from django.contrib.auth import get_user_model
 from .models import User
 from .serializers import UserSerializer, LoginSerializer
@@ -12,22 +11,20 @@ User = get_user_model()
 
 # Vista para registrar un usuario
 class RegisterView(views.APIView):
-    permission_classes = [permissions.AllowAny]  # Permitir a cualquier usuario acceder
+    permission_classes = [permissions.AllowAny]
 
     def post(self, request):
         serializer = UserSerializer(data=request.data)
         if serializer.is_valid():
-            # Crear el usuario pero no lo activamos aún
             user = serializer.save(is_verified=False, is_active=False)
-            verification_code = str(random.randint(1000, 9999))  # Generar código de verificación
+            verification_code = str(random.randint(1000, 9999))
             user.verification_code = verification_code
             user.save()
 
-            # Enviar el correo con el código de verificación
             send_mail(
                 'Código de verificación',
                 f'Tu código de verificación es {verification_code}',
-                'soportealex68@gmail.com',  # Cambiar por un correo válido
+                'soportealex68@gmail.com',
                 [user.email],
                 fail_silently=False,
             )
@@ -39,7 +36,7 @@ class RegisterView(views.APIView):
 
 # Vista para verificar el código
 class VerifyCodeView(views.APIView):
-    permission_classes = [permissions.AllowAny]  # No requiere autenticación
+    permission_classes = [permissions.AllowAny]
 
     def post(self, request):
         email = request.data.get('email')
@@ -48,14 +45,12 @@ class VerifyCodeView(views.APIView):
         try:
             user = User.objects.get(email=email)
 
-            # Comprobar si el código ingresado es correcto
             if user.verification_code == code:
-                # Activar la cuenta del usuario
                 user.is_verified = True
-                user.is_active = True  # Activar la cuenta para poder iniciar sesión
+                user.is_active = True
                 user.save()
-
                 return Response({"message": "Cuenta verificada correctamente."}, status=status.HTTP_200_OK)
+            
             return Response({"message": "Código incorrecto."}, status=status.HTTP_400_BAD_REQUEST)
 
         except User.DoesNotExist:
@@ -64,48 +59,56 @@ class VerifyCodeView(views.APIView):
 
 # Vista para iniciar sesión
 class LoginView(views.APIView):
-    permission_classes = [permissions.AllowAny]  # No requiere autenticación
+    permission_classes = [permissions.AllowAny]
 
     def post(self, request):
+        print("Datos recibidos:", request.data)  # Debug
         serializer = LoginSerializer(data=request.data)
+
         if serializer.is_valid():
             email = serializer.validated_data['email']
             password = serializer.validated_data['password']
-            user = authenticate(username=email, password=password)
 
-            # Comprobar si el usuario está verificado y activo
-            if user and user.is_verified and user.is_active:
-                refresh = RefreshToken.for_user(user)
-                return Response({
-                    'access': str(refresh.access_token),
-                    'refresh': str(refresh),
-                }, status=status.HTTP_200_OK)
+            try:
+                user = User.objects.get(email=email)
+                print(f"Usuario encontrado: {user.email}")  # Debug
+            except User.DoesNotExist:
+                return Response({"message": "Correo o contraseña incorrectos."}, status=status.HTTP_400_BAD_REQUEST)
 
-            return Response({"message": "Credenciales incorrectas o cuenta no verificada."}, status=status.HTTP_400_BAD_REQUEST)
+            if not user.check_password(password):
+                return Response({"message": "Correo o contraseña incorrectos."}, status=status.HTTP_400_BAD_REQUEST)
+
+            if not user.is_verified or not user.is_active:
+                return Response({"message": "Cuenta no verificada o desactivada."}, status=status.HTTP_400_BAD_REQUEST)
+
+            # Generar tokens JWT
+            refresh = RefreshToken.for_user(user)
+            return Response({
+                'access': str(refresh.access_token),
+                'refresh': str(refresh),
+            }, status=status.HTTP_200_OK)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 # Vista para restablecer la contraseña
 class PasswordResetView(views.APIView):
-    permission_classes = [permissions.AllowAny]  # No requiere autenticación
+    permission_classes = [permissions.AllowAny]
 
     def post(self, request):
         email = request.data.get('email')
 
         try:
             user = User.objects.get(email=email)
-            reset_code = str(random.randint(1000, 9999))  # Generar código de restablecimiento
+            reset_code = str(random.randint(1000, 9999))
 
-            # Guardar el código de restablecimiento en el campo de verificación
             user.verification_code = reset_code
             user.save()
 
-            # Enviar el correo con el código de restablecimiento
             send_mail(
                 'Código para restablecer la contraseña',
                 f'Tu código de restablecimiento es {reset_code}',
-                'soportealex68@gmail.com',  # Cambiar por un correo válido
+                'soportealex68@gmail.com',
                 [user.email],
                 fail_silently=False,
             )

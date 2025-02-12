@@ -1,6 +1,5 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
-from django.contrib.auth import authenticate
 
 User = get_user_model()
 
@@ -25,9 +24,17 @@ class LoginSerializer(serializers.Serializer):
     def validate(self, data):
         email = data.get('email')
         password = data.get('password')
-        user = authenticate(username=email, password=password)  # Se usa username=email
-        if user is None:
-            raise serializers.ValidationError("Credenciales incorrectas")
+
+        try:
+            user = User.objects.get(email=email)
+        except User.DoesNotExist:
+            raise serializers.ValidationError("Correo o contraseña incorrectos.")
+
+        # Comprobar la contraseña manualmente
+        if not user.check_password(password):
+            raise serializers.ValidationError("Correo o contraseña incorrectos.")
+
         if not user.is_verified:
-            raise serializers.ValidationError("La cuenta no está verificada")
+            raise serializers.ValidationError("La cuenta no está verificada.")
+
         return data
